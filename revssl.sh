@@ -1,13 +1,4 @@
 #!/bin/bash
-function ctrl_c() {
-    if [ $remove_certs -eq 1 ]; then
-	rm $cert_name
-	rm $key_name
-	print_info "Removed keys and certificates"
-    fi
-}
-trap ctrl_c INT
-
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -79,7 +70,7 @@ echo "	Domain name for Windows Powershell agent (default: $domain)"
 echo " -o	Write agent to a file"
 echo " -n <outfile>"
 echo "	Select name of the agent file (default: $agent_file_name)"
-echo " -r	Remove generated certificates when the OpenSSH server shuts down (Ctrl-C)."
+echo " -r	Remove generated certificates after OpenSSH server is running"
 }
 
 while getopts "hie:p:l:d:a:on:r" opt; do
@@ -150,6 +141,15 @@ fi
 print_info "Generated agent for $platform (execute it on target machine):"
 echo "$agent"
 echo
+remove_certs() {
+    sleep 10
+    if [ $remove_certs -eq 1 ]; then
+	rm $cert_name
+	rm $key_name
+	print_info "Removed keys and certificates"
+    fi
+}
+remove_certs &
 if [ $agent_file -eq 1 ]; then
 	echo "$agent" > $agent_file_name
 	print_info "Saved agent to $bold$agent_file_name$reset"
