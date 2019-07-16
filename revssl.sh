@@ -1,4 +1,13 @@
 #!/bin/bash
+function ctrl_c() {
+    if [ $remove_certs -eq 1 ]; then
+	rm $cert_name
+	rm $key_name
+	print_info "Removed keys and certificates"
+    fi
+}
+trap ctrl_c INT
+
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -70,11 +79,10 @@ echo "	Domain name for Windows Powershell agent (default: $domain)"
 echo " -o	Write agent to a file"
 echo " -n <outfile>"
 echo "	Select name of the agent file (default: $agent_file_name)"
-echo " -r	Remove generated certificates after established session"
-
+echo " -r	Remove generated certificates when the OpenSSH server shuts down (Ctrl-C)."
 }
 
-while getopts "hie:p:l:d:a:on:" opt; do
+while getopts "hie:p:l:d:a:on:r" opt; do
     case "$opt" in
     h)
         print_usage
@@ -149,9 +157,4 @@ fi
 if [ $listener -eq 1 ]; then
 	print_good "Started listener on port $lport"
 	$listener_cmd
-fi
-if [ $remove_certs -eq 1 ]; then
-	rm $cert_name
-	rm $key_name
-	print_info "Removed keys and certificates"
 fi
