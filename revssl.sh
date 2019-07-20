@@ -63,18 +63,17 @@ echo " -k <keyname>"
 echo "	Set name of generated key file (default: $key_name)"
 echo " -c <certname>"
 echo "	Set name of generated cert file (default: $cert_name)"
-echo " -p <platform>"
+echo " -a <platform>"
 echo "	Select agent platform (windows or linux, default: $platform)"
 echo " -s <domain>"
 echo "	Domain name for Windows Powershell agent (default: $domain)"
 echo " -o	Write agent to a file"
 echo " -n <outfile>"
 echo "	Select name of the agent file (default: $agent_file_name)"
-echo " -r	Remove generated certificates after established session"
-
+echo " -r	Remove generated certificates after OpenSSH server is running"
 }
 
-while getopts "hie:p:l:d:a:on:" opt; do
+while getopts "hie:p:l:d:a:on:r" opt; do
     case "$opt" in
     h)
         print_usage
@@ -142,6 +141,15 @@ fi
 print_info "Generated agent for $platform (execute it on target machine):"
 echo "$agent"
 echo
+remove_certs() {
+    sleep 10
+    if [ $remove_certs -eq 1 ]; then
+	rm $cert_name
+	rm $key_name
+	print_info "Removed keys and certificates"
+    fi
+}
+remove_certs &
 if [ $agent_file -eq 1 ]; then
 	echo "$agent" > $agent_file_name
 	print_info "Saved agent to $bold$agent_file_name$reset"
@@ -149,9 +157,4 @@ fi
 if [ $listener -eq 1 ]; then
 	print_good "Started listener on port $lport"
 	$listener_cmd
-fi
-if [ $remove_certs -eq 1 ]; then
-	rm $cert_name
-	rm $key_name
-	print_info "Removed keys and certificates"
 fi
