@@ -9,7 +9,7 @@ reset=`tput sgr0`
 bold=`tput bold`
 underline=`tput smul`
 
-sun="${red}o${reset}${yellow}O${reset}"
+l="${red}<*>${reset}"
 
 print_good(){
     echo "${green}[+]${reset}" $1
@@ -43,7 +43,7 @@ echo """		        _
 |_|  \___| \_/ |___/___/_|
 """
 echo "Revssl ver. 1.0"
-echo "Created by: TheSecondSun $sun"
+echo "Created by: redcodelabs.io $l"
 echo
 echo "usage: revssl [-h] [-i] [-e <encryption>] [-d <days>] [-l <lhost>]"
 echo "	      [-p <lport>] [-k <keyname>] [-c <certname>] [-p <platform>]"
